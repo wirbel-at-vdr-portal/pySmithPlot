@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # last edit: 11.04.2018
 
-from collections import Iterable
+from collections.abc import Iterable
 
 import numpy as np
 

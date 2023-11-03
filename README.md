@@ -1,6 +1,10 @@
 pySmithPlot
 ===========
 
+## Installation
+python setup.py install
+
+
 ## New Release of Version 0.2
 
 After 2 years of getting dusty **pySmithPlot** now got some new features and bug fixes. Here is a short changelog:

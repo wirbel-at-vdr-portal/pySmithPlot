@@ -36,7 +36,7 @@ of all given parameters. This does not work always, especially if the
 parameters are array-like types (e.g. numpy.ndarray).
 '''
 
-from collections import Iterable
+from collections.abc import Iterable
 from numbers import Number
 from types import MethodType, FunctionType
 
@@ -449,25 +449,25 @@ class SmithAxes(Axes):
                              self.yaxis.get_majorticklocs()):
             # workaround for fixing to small infinity symbol
             if abs(loc) > self._near_inf:
-                tick.label.set_size(tick.label.get_size() +
+                tick.label1.set_size(tick.label1.get_size() +
                                     self._get_key("symbol.infinity.correction"))
 
-            tick.label.set_verticalalignment('center')
+            tick.label1.set_verticalalignment('center')
 
             x = np.real(self._moebius_z(loc * 1j))
             if x < -0.1:
-                tick.label.set_horizontalalignment('right')
+                tick.label1.set_horizontalalignment('right')
             elif x > 0.1:
-                tick.label.set_horizontalalignment('left')
+                tick.label1.set_horizontalalignment('left')
             else:
-                tick.label.set_horizontalalignment('center')
+                tick.label1.set_horizontalalignment('center')
 
         self.yaxis.set_major_formatter(self.ImagFormatter(self))
         self.xaxis.set_major_formatter(self.RealFormatter(self))
 
         if self._get_key("axes.normalize") and self._get_key("axes.normalize.label"):
             x, y = z_to_xy(self._moebius_inv_z(-1 - 1j))
-            box = self.text(x, y, "Z$_\mathrm{0}$ = %d$\,$%s" % (self._impedance, self._get_key("symbol.ohm")), ha="left", va="bottom")
+            box = self.text(x, y, "Z0 = {} Ohm".format(self._impedance), ha="left", va="bottom")
 
             px = self._get_key("ytick.major.pad")
             py = px + 0.5 * box.get_size()
@@ -507,7 +507,7 @@ class SmithAxes(Axes):
 
     def get_yaxis_text1_transform(self, pixelPad):
         if hasattr(self, 'yaxis') and len(self.yaxis.majorTicks) > 0:
-            font_size = self.yaxis.majorTicks[0].label.get_size()
+            font_size = self.yaxis.majorTicks[0].label1.get_size()
         else:
             font_size = self._get_key("font.size")
 
@@ -655,12 +655,10 @@ class SmithAxes(Axes):
             def create_artists(self, legend, orig_handle,
                                xdescent, ydescent, width, height, fontsize,
                                trans):
-                legline, legline_marker = HandlerLine2D.create_artists(self, legend, orig_handle, xdescent, ydescent,
+                legline = HandlerLine2D.create_artists(self, legend, orig_handle, xdescent, ydescent,
                                                                        width, height, fontsize, trans)
 
-                if hasattr(orig_handle, "_markerhacked"):
-                    this_axes._hack_linedraw(legline_marker, True)
-                return legline, legline_marker
+                return legline
 
         return Axes.legend(self, *args, handler_map={Line2D: SmithHandlerLine2D()}, **kwargs)
 
@@ -728,7 +726,7 @@ class SmithAxes(Axes):
                     pass
 
             # if (converted) arg is an ndarray of complex type, split it
-            if isinstance(arg, np.ndarray) and arg.dtype in [np.complex, np.complex128]:
+            if isinstance(arg, np.ndarray) and arg.dtype in [complex, np.complex128]:
                 new_args += z_to_xy(arg)
             else:
                 new_args += (arg,)
@@ -1060,6 +1058,8 @@ class SmithAxes(Axes):
                             y0, y1 = yticks[k:k + 2]
 
                             x_div, y_div = d_mat[i, k]
+                            x_div = round(x_div)	# round because we need an integer otherwise have error. Mod from PMarsh Oct 6, 2020
+                            y_div = round(y_div)	# round because we need an integer otherwise have error. Mod from PMarsh Oct 6, 2020
 
                             for xs in np.linspace(x0, x1, x_div + 1)[1:]:
                                 x_lines.append([xs, y0, y1])
