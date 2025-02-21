@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# last edit: 11.04.2018
+# last edit: 21.02.2025
 '''
 Library for plotting fully automatic a Smith Chart with various customizable
 parameters and well selected default values. It also provides the following 
@@ -36,7 +36,7 @@ of all given parameters. This does not work always, especially if the
 parameters are array-like types (e.g. numpy.ndarray).
 '''
 
-from collections import Iterable
+from collections.abc import Iterable
 from numbers import Number
 from types import MethodType, FunctionType
 
